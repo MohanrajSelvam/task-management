@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProfileController {
@@ -27,9 +28,23 @@ public class ProfileController {
     }
     @PostMapping(value = "/createuser")
     public UserProfile createNewProfile(@Valid @RequestBody UserProfile userProfile,BindingResult bindingResult) {
-        if (!bindingResult.hasErrors()) {
+        List<UserProfile > userProfiles = userProfiles();
+        boolean unique = true;
+        for (UserProfile user: userProfiles) {
+            if (userProfile.getEmail().equalsIgnoreCase(user.getEmail())) {
+                userProfile.setError(true);
+                userProfile.setUser_id(null);
+                userProfile.setErrorMsg("Email already registered");
+                unique = false;
+            }
+        }
+        if (unique) {
             return userProfileDataMapper.saveAndFlush(userProfile);
         }
-        return null;
+        return userProfile;
+    }
+    @GetMapping(value = "/findall")
+    public List<UserProfile> userProfiles() {
+        return userProfileDataMapper.findAll();
     }
 }
