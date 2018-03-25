@@ -94,6 +94,18 @@ public class ProfileController {
         baseResponse = responseHttpStatus.getBaseResponseForHttpStatusUnAuthorized(error);
         return baseResponse;
     }
+    @PostMapping(value = "auth/user/details")
+    public BaseResponse getLoggedinUserDetails() {
+        BaseResponse response = null;
+        List<String> error = new ArrayList<>();
+        if(authenticationService.checkAuthStatus()) {
+            response = responseHttpStatus.getBaseResponseForHttpStatusOK(authenticationService.getLoggedInUser());
+            return response;
+        }
+        error.add("No active logged in session");
+        response = responseHttpStatus.getBaseResponseForHttpStatusUnAuthorized(error);
+        return response;
+    }
     @GetMapping(value = "/logout")
     public BaseResponse logout() {
         BaseResponse response = null;
