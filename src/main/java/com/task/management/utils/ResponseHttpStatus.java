@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class ResponseHttpStatus {
 
-    private  BaseResponse response =new BaseResponse();;
+    private  BaseResponse response =null;;
 
 
     public BaseResponse getBaseResponseForHttpStatusOK(Object object) {
@@ -20,11 +20,13 @@ public class ResponseHttpStatus {
         return response;
     }
     public BaseResponse getBaseResponseForHttpStatusOK(String successMsg) {
+        response = new BaseResponse();
         response.setResponse(successMsg);
         return response;
     }
 
     public BaseResponse getBaseResponseForHttpStatusBADREQUEST( List<String> errorMsg) {
+        response = new BaseResponse();
         response.setError(true);
         response.setResponseCode(1);
         response.setErrorMsg(errorMsg);
@@ -32,9 +34,18 @@ public class ResponseHttpStatus {
         return response;
     }
     public BaseResponse getBaseResponseForHttpStatusINTERNALSERVERERROR( ) {
+        response = new BaseResponse();
         List<String> errMsg = new ArrayList<>();
         errMsg.add("#500, Sorry for inconvenience we are working to fix this.");
         response.setErrorMsg(errMsg);
+        response.setResponse(null);
+        return response;
+    }
+    public BaseResponse getBaseResponseForHttpStatusUnAuthorized( List<String> errorMsg) {
+        response = new BaseResponse();
+        response.setError(true);
+        response.setResponseCode(1);
+        response.setErrorMsg(errorMsg);
         response.setResponse(null);
         return response;
     }

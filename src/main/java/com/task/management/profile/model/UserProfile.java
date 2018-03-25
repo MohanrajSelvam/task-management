@@ -10,31 +10,28 @@ import java.util.List;
 
 @Entity
 @Table(uniqueConstraints=@UniqueConstraint(columnNames="email"))
-public class UserProfile extends BaseResponse{
+public class UserProfile extends BaseResponse {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long user_id;
-    @Column(name="email" ,unique = true,nullable = false)
-    @NotEmpty(message="Email is mandatory")
+    @Column(name = "email", unique = true, nullable = false)
+    @NotEmpty(message = "Email is mandatory")
     private String email;
-    @Column(name="password",nullable = false)
-    @NotEmpty(message="Password is mandatory")
+    @Column(name = "password", nullable = false)
+    @NotEmpty(message = "Password is mandatory")
     private String password;
-    @NotEmpty(message="First Name is mandatory")
-    @Column(name="first_name",nullable = false)
+    @NotEmpty(message = "First Name is mandatory")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
-    @NotEmpty(message="Last Name is mandatory")
-    @Column(name="lastname")
+    @NotEmpty(message = "Last Name is mandatory")
+    @Column(name = "lastname")
     private String lastName;
-    @Column(name="mobile",nullable = false)
-    @Size(min = 10,max = 10)
-    @NotEmpty(message="Mobile is mandatory")
+    @Column(name = "mobile", nullable = false)
+    @Size(min = 10, max = 10)
+    @NotEmpty(message = "Mobile is mandatory")
     private String mobile;
-    @Column(name="user_role",nullable = false)
-
+    @Column(name = "user_role", nullable = false)
     private Role role;
-    @OneToMany(mappedBy = "userProfile"  )
-    private List<Task> tasks;
 
     public long getUser_id() {
         return user_id;
@@ -92,11 +89,4 @@ public class UserProfile extends BaseResponse{
         this.role = role;
     }
 
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
 }

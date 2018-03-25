@@ -1,6 +1,5 @@
 package com.task.management.task.model;
 
-import com.task.management.base.BaseResponse;
 import com.task.management.profile.model.UserProfile;
 
 import javax.persistence.*;
@@ -14,6 +13,8 @@ public class Task {
     private long task_id;
     @Column(name = "task_name")
     private String taskName;
+    @Column(name = "created_date",nullable = false)
+    private Date createdDate;
     @Column(name = "assigned_date")
     private Date assignedDate;
     @Column(name = "finished_date")
@@ -24,9 +25,7 @@ public class Task {
     private String status;
     @Column(name = "feedback")
     private String feedback;
-    @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
-    private UserProfile userProfile;
+
     public long getTask_id() {
         return task_id;
     }
@@ -37,6 +36,14 @@ public class Task {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public Date getAssignedDate() {
@@ -77,14 +84,6 @@ public class Task {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
-    }
-
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
     }
 
     @Override

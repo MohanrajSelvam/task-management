@@ -4,6 +4,7 @@ import com.task.management.base.BaseResponse;
 import com.task.management.profile.datamapper.UserProfileDataMapper;
 import com.task.management.profile.model.Role;
 import com.task.management.profile.model.UserProfile;
+import com.task.management.service.AuthenticationService;
 import com.task.management.utils.ResponseHttpStatus;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -25,35 +26,37 @@ import java.util.List;
 @RestController
 public class ProfileController {
     @Autowired
-    UserProfileDataMapper userProfileDataMapper;
+    private UserProfileDataMapper userProfileDataMapper;
     @Autowired
     private ResponseHttpStatus responseHttpStatus;
-    @GetMapping(value = "/welcome")
-    public ResponseEntity<String> welcome() {
-        JSONObject jsonObject= new JSONObject();
-        jsonObject.put("result","success");
-        return new ResponseEntity<String>(jsonObject.toJSONString(), HttpStatus.OK);
-    }
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    /**
+     *
+     * @param userProfile
+     * @param bindingResult
+     * @return BaseResponse
+     */
     @PostMapping(value = "/createuser")
     public BaseResponse createNewProfile(@Valid @RequestBody UserProfile userProfile, BindingResult bindingResult) {
-        List<String> errorMessages = new ArrayList<>();
+        List<String> errorMessages = null;
         List<UserProfile > userProfiles = userProfiles();
-        if (!bindingResult.hasErrors() ) {
-            boolean unique = true;
-            for (UserProfile user: userProfiles) {
-                if (userProfile.getEmail().equalsIgnoreCase(user.getEmail())) {
-                    userProfile.setError(true);
-                    errorMessages.add("Email already registered");
-                    userProfile.setErrorMsg(errorMessages);
-                    unique = false;
-                }
+        boolean unique = true;
+        for (UserProfile user: userProfiles) {
+            if (userProfile.getEmail().trim().equalsIgnoreCase(user.getEmail().trim())) {
+                errorMessages = new ArrayList<>();
+                userProfile.setError(true);
+                errorMessages.add("Email already registered");
+                userProfile.setErrorMsg(errorMessages);
+                unique = false;
             }
-            if (unique) {
-                userProfile.setRole(Role.USER);
-                userProfileDataMapper.save(userProfile);
-                BaseResponse response = responseHttpStatus.getBaseResponseForHttpStatusOK("Profile created successfully");
-                return response;
-            }
+        }
+        if (!bindingResult.hasErrors() &&unique) {
+            userProfile.setRole(Role.USER);
+            userProfileDataMapper.save(userProfile);
+            BaseResponse response = responseHttpStatus.getBaseResponseForHttpStatusOK("Profile created successfully");
+            return response;
         }
         List<FieldError> errors = bindingResult.getFieldErrors();
         for (FieldError error:errors) {
@@ -62,9 +65,47 @@ public class ProfileController {
         BaseResponse baseResponse =responseHttpStatus.getBaseResponseForHttpStatusBADREQUEST(errorMessages);
         return baseResponse;
     }
+
+    /**
+     *
+     * @return list of user.
+     */
     @GetMapping(value = "/findall")
     public List<UserProfile> userProfiles() {
         return userProfileDataMapper.findAll();
+    }
+
+    @PostMapping(value = "/login")
+    public BaseResponse login(@RequestBody UserProfile userProfile) {
+        userProfile = authenticationService.auth(userProfile);
+        List<String> error = new ArrayList<>();
+        BaseResponse baseResponse = null;
+        if (!authenticationService.checkAuthStatus()) {
+            if (  null != userProfile) {
+                authenticationService.startLoginSession(userProfile);
+                baseResponse = responseHttpStatus.getBaseResponseForHttpStatusOK("Logged in Successfully");
+                return baseResponse;
+            }
+            error.add("Please check your credentials");
+            baseResponse = responseHttpStatus.getBaseResponseForHttpStatusUnAuthorized(error);
+            return baseResponse;
+        }
+        error.add("You already logged in");
+        baseResponse = responseHttpStatus.getBaseResponseForHttpStatusUnAuthorized(error);
+        return baseResponse;
+    }
+    @GetMapping(value = "/logout")
+    public BaseResponse logout() {
+        BaseResponse response = null;
+        List<String> error = new ArrayList<>();
+        if (authenticationService.checkAuthStatus()) {
+            authenticationService.closeLogedInSession();
+            response = responseHttpStatus.getBaseResponseForHttpStatusOK("You have been logged out successfully");
+            return response;
+        }
+        error.add("No active logged in session");
+        response = responseHttpStatus.getBaseResponseForHttpStatusUnAuthorized(error);
+        return response;
     }
 
 }
