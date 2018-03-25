@@ -1,7 +1,7 @@
 package com.task.management.profile.model;
 
+import com.task.management.base.BaseResponse;
 import com.task.management.task.model.Task;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -9,33 +9,39 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-public class UserProfile {
+@Table(uniqueConstraints=@UniqueConstraint(columnNames="email"))
+public class UserProfile extends BaseResponse{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long user_id;
-    @Column(name="email" ,unique = true)
+    @Column(name="email" ,unique = true,nullable = false)
     @NotEmpty(message="Email is mandatory")
     private String email;
-    @Column(name="password")
+    @Column(name="password",nullable = false)
     @NotEmpty(message="Password is mandatory")
     private String password;
     @NotEmpty(message="First Name is mandatory")
-    @Column(name="first_name")
+    @Column(name="first_name",nullable = false)
     private String firstName;
     @NotEmpty(message="Last Name is mandatory")
     @Column(name="lastname")
     private String lastName;
-    @Column(name="mobile")
-    @Size(min = 10)
+    @Column(name="mobile",nullable = false)
+    @Size(min = 10,max = 10)
     @NotEmpty(message="Mobile is mandatory")
     private String mobile;
-    @Column(name="admin_status")
-    private String isAdmin;
+    @Column(name="user_role",nullable = false)
+
+    private Role role;
     @OneToMany(mappedBy = "userProfile"  )
     private List<Task> tasks;
 
     public long getUser_id() {
         return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public String getEmail() {
@@ -78,12 +84,12 @@ public class UserProfile {
         this.mobile = mobile;
     }
 
-    public String getIsAdmin() {
-        return isAdmin;
+    public Role getRole() {
+        return role;
     }
 
-    public void setIsAdmin(String isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public List<Task> getTasks() {
@@ -92,19 +98,5 @@ public class UserProfile {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
-    }
-
-    @Override
-    public String toString() {
-        return "UserProfile{" +
-                "user_id=" + user_id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", isAdmin='" + isAdmin + '\'' +
-                ", tasks=" + tasks +
-                '}';
     }
 }

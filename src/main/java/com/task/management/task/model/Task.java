@@ -1,5 +1,6 @@
 package com.task.management.task.model;
 
+import com.task.management.base.BaseResponse;
 import com.task.management.profile.model.UserProfile;
 
 import javax.persistence.*;
