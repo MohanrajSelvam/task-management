@@ -25,6 +25,9 @@ public class Task {
     private String status;
     @Column(name = "feedback")
     private String feedback;
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+   private UserProfile userProfile;
 
     public long getTask_id() {
         return task_id;
@@ -84,6 +87,14 @@ public class Task {
 
     public void setFeedback(String feedback) {
         this.feedback = feedback;
+    }
+
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 
     @Override

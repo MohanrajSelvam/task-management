@@ -34,6 +34,7 @@ public class TaskController {
         List<String> errorMessages = new ArrayList<>();
         if(authenticationService.checkAuthStatus()) {
             if (!bindingResult.hasErrors()) {
+                task.setUserProfile(authenticationService.getLoggedInUser());
                 task.setCreatedDate(new Date());
                 taskDataMapper.save(task);
                 baseResponse= responseHttpStatus.getBaseResponseForHttpStatusOK("Task created successfully");

@@ -32,6 +32,8 @@ public class UserProfile extends BaseResponse {
     private String mobile;
     @Column(name = "user_role", nullable = false)
     private Role role;
+    @OneToMany(mappedBy = "userProfile"  )
+    private List<Task> tasks;
 
     public long getUser_id() {
         return user_id;
@@ -89,4 +91,11 @@ public class UserProfile extends BaseResponse {
         this.role = role;
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 }

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+/**
+ * @<code>BaseResponse</code> Api response class.
+ */
 public class BaseResponse {
     private int responseCode;
     private boolean isError;
